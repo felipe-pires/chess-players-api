@@ -1,0 +1,149 @@
+openapi: 3.0.3
+info:
+  title: chess players api
+  description: Fornece dados de jogadores de xadrez em json
+  termsOfService: urn:tos
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  version: '1.0'
+tags:
+  - name: player-controller
+    description: Player Controller
+paths:
+
+  "/player/{fideId}":
+    get:
+      servers:
+      - url: 'localhost:8080'
+      tags:
+        - player-controller
+      summary: Retorna dados de um jogador
+      operationId: findPlayer
+      parameters:
+        - name: fideId
+          in: path
+          description: Identificador do jogador na fide
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/Player"
+        '500':
+          description: Internal Error
+        '400':
+          description: Bad Request
+      deprecated: false
+  "/player/{fideId}/chart":
+    get:
+      servers:
+      - url: 'localhost:8080'
+      tags:
+        - player-controller
+      summary: Retorna dados do progresso de um jogador
+      operationId: findChartPlayer
+      parameters:
+        - name: fideId
+          in: path
+          description: Identificador do jogador na fide
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/ChartPlayer"
+        '500':
+          description: Internal Error
+        '400':
+          description: Bad Request
+      deprecated: false
+  "/player/top-hundred":
+    get:
+      servers:
+      - url: 'localhost:8080'
+      tags:
+        - player-controller
+      summary: Retorna top 100 jogadores de algum rank
+      operationId: findTopHundredPlayers
+      parameters:
+        - name: rank
+          in: query
+          description: men, women, juniors or girls
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/TopHundredPlayers"
+        '500':
+          description: Internal Error
+        '400':
+          description: Bad Request
+      deprecated: false
+components:
+  schemas:
+    Player:
+      type: object
+      properties:
+        position:
+          type: integer
+        name:
+          type: string
+        fideId:
+          type: string
+        title:
+          type: string
+        yearOfBirth:
+          type: integer
+        federation:
+          type: string
+        ratings: 
+          type: object
+          properties:
+            ratingStandard:
+              type: integer
+            ratingRapid:
+              type: integer
+            ratingBlitz:
+              type: integer
+      title: Player
+    ChartPlayer:
+      type: object
+      properties:
+        period:
+          type: string
+        ratingStantard:
+          type: integer
+        ratingRapid:
+          type: integer
+        ratingBlitz:
+          type: integer
+      title: ChartPlayer
+    TopHundredPlayers:
+      type: object
+      properties:
+        federation:
+          type: string
+        ratingStantard:
+          type: integer
+        name:
+          type: string
+        position:
+          type: integer
+        yearOfBirth:
+          type: integer
+      title: TopHundredPlayers

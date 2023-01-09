@@ -1,0 +1,73 @@
+{
+	"info": {
+		"_postman_id": "75a7707e-b03b-4b68-b10f-de5ee21ae64b",
+		"name": "ChessPlayers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "top-hundred",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/player/top-hundred?rank={men, women, girls or juniors}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"player",
+						"top-hundred"
+					],
+					"query": [
+						{
+							"key": "rank",
+							"value": "{men, women, girls or juniors}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findPlayer",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/player/{fideId}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"player",
+						"{fideId}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findChartPlayer",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/player/{fideId}/chart",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"player",
+						"{fideId}",
+						"chart"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
