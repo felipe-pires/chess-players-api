@@ -34,7 +34,12 @@ public class PlayerController {
     }
 
     @GetMapping("/{fideId}/top-records")
-    public ResponseEntity teste(@PathVariable String fideId) throws Exception {
+    public ResponseEntity findTopRecords(@PathVariable String fideId) throws Exception {
             return new ResponseEntity(service.findTopRecords(fideId), HttpStatus.OK);
+    }
+
+    @GetMapping("/events")
+    public ResponseEntity findEvents() throws Exception {
+            return new ResponseEntity(service.findEvents(), HttpStatus.OK);
     }
 }

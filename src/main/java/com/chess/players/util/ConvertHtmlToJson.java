@@ -158,4 +158,49 @@ public class ConvertHtmlToJson {
         }
         return gson.fromJson(records.toString(), JsonArray.class);
     }
+
+    public JsonObject convertEventsToJson(String source) throws JSONException {
+        int index = 0;
+        int indexCalendar = 0;
+        Document document = Jsoup.parse(source);
+        JSONObject eventJson = new JSONObject();
+        JSONObject dataEvent = null;
+        JSONArray events = null;
+        String[] event = new String[4];
+        String[] calendars = new String[5];
+
+        for (Element div : document.getElementsByClass("calendar-table__title")) {
+            calendars[index] = div.text();
+            index++;
+        }
+        index = 0;
+
+        for (Element div : document.getElementsByClass("calendar-table")) {
+            events = new JSONArray();
+            for (Element table : div.select("tbody")) {
+                for (Element tr : table.select("tr")) {
+
+                    Elements tds = tr.select("td");
+                    dataEvent = new JSONObject();
+                    for (Element td : tds) {
+                        event[index] = td.text();
+                        index++;
+                    }
+
+                    index = 0;
+
+                    if (event.length > 0 && event[0] != null && !event[0].contains("More")) {
+                        dataEvent.put("name", event[0]);
+                        dataEvent.put("place", event[1]);
+                        dataEvent.put("start", event[2]);
+                        dataEvent.put("end", event[3]);
+                        events.put(dataEvent);
+                    }
+                }
+                eventJson.put(calendars[indexCalendar], events);
+                indexCalendar++;
+            }
+        }
+        return gson.fromJson(eventJson.toString(), JsonObject.class);
+    }
 }

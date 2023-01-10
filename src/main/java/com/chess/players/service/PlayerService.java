@@ -38,4 +38,8 @@ public class PlayerService {
         return convert.convertTopRecordsToJson(responseEntity.getBody().toString());
     }
 
+    public JsonObject findEvents() throws Exception{
+        ResponseEntity responseEntity = requestUtil.get("https://fide.com/calendar");
+        return convert.convertEventsToJson(responseEntity.getBody().toString());
+    }
 }
