@@ -32,5 +32,9 @@ public class PlayerController {
     public ResponseEntity findChartPlayer(@PathVariable String fideId) throws Exception {
             return new ResponseEntity(service.findChartPlayer(fideId), HttpStatus.OK);
     }
-    
+
+    @GetMapping("/{fideId}/top-records")
+    public ResponseEntity teste(@PathVariable String fideId) throws Exception {
+            return new ResponseEntity(service.findTopRecords(fideId), HttpStatus.OK);
+    }
 }

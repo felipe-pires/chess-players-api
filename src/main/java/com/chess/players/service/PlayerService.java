@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.chess.players.util.ConvertHtmlToJson;
 import com.chess.players.util.HttpRequestUtil;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 @Service
@@ -29,7 +30,12 @@ public class PlayerService {
 
     public JsonObject findChartPlayer(String fideId) throws Exception{
         ResponseEntity responseEntity = requestUtil.get("https://ratings.fide.com/profile/" + fideId + "/chart");
-        return convert.convertHtmlChartToJson(responseEntity.getBody().toString());
+        return convert.convertChartToJson(responseEntity.getBody().toString());
+    }
+
+    public JsonArray findTopRecords(String fideId) throws Exception{
+        ResponseEntity responseEntity = requestUtil.get("https://ratings.fide.com/a_top_records.phtml?event=" + fideId);
+        return convert.convertTopRecordsToJson(responseEntity.getBody().toString());
     }
 
 }

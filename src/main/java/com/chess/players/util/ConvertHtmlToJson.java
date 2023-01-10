@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 @Component
@@ -66,9 +67,12 @@ public class ConvertHtmlToJson {
             index++;
         }
         if (ratings.length > 0) {
-            ratingsJson.put("ratingStandard", ratings[0].contains("Not rated") ? ratings[0]:Integer.parseInt(ratings[0]));
-            ratingsJson.put("ratingRapid", ratings[1].contains("Not rated") ? ratings[1]:Integer.parseInt(ratings[1]));
-            ratingsJson.put("ratingBlitz", ratings[2].contains("Not rated") ? ratings[2]:Integer.parseInt(ratings[2]));
+            ratingsJson.put("ratingStandard",
+                    ratings[0].contains("Not rated") ? ratings[0] : Integer.parseInt(ratings[0]));
+            ratingsJson.put("ratingRapid",
+                    ratings[1].contains("Not rated") ? ratings[1] : Integer.parseInt(ratings[1]));
+            ratingsJson.put("ratingBlitz",
+                    ratings[2].contains("Not rated") ? ratings[2] : Integer.parseInt(ratings[2]));
         }
 
         index = 0;
@@ -93,7 +97,7 @@ public class ConvertHtmlToJson {
         return gson.fromJson(player.toString(), JsonObject.class);
     }
 
-    public JsonObject convertHtmlChartToJson(String source) throws JSONException {
+    public JsonObject convertChartToJson(String source) throws JSONException {
         int index = 0;
         Document document = Jsoup.parse(source);
         JSONObject chart = null;
@@ -105,12 +109,12 @@ public class ConvertHtmlToJson {
         Elements name = divProfile.getElementsByClass("profile-top-title");
 
         for (Element table : document.getElementsByClass("profile-table_chart-table")) {
-            
+
             for (Element tr : table.select("tr")) {
                 data = new String[7];
                 chart = new JSONObject();
                 Elements tds = tr.select("td");
-                
+
                 for (Element e : tds) {
                     data[index] = e.text();
                     index++;
@@ -118,14 +122,40 @@ public class ConvertHtmlToJson {
 
                 if (data.length > 0 && data[0] != null) {
                     chart.put("period", data[0]);
-                    chart.put("standardRating",  data[1] != null && !data[1].isEmpty() ? Integer.parseInt(data[1]) : 0);
-                    chart.put("rapidRating",  data[3] != null && !data[3].isEmpty() ? Integer.parseInt(data[3]) : 0);
-                    chart.put("blitzRating",  data[5] != null && !data[5].isEmpty() ? Integer.parseInt(data[5]) : 0);          
+                    chart.put("standardRating", data[1] != null && !data[1].isEmpty() ? Integer.parseInt(data[1]) : 0);
+                    chart.put("rapidRating", data[3] != null && !data[3].isEmpty() ? Integer.parseInt(data[3]) : 0);
+                    chart.put("blitzRating", data[5] != null && !data[5].isEmpty() ? Integer.parseInt(data[5]) : 0);
                     dataChart.put(chart);
                 }
                 index = 0;
             }
         }
         return gson.fromJson(new JSONObject().put(name.first().text(), dataChart).toString(), JsonObject.class);
+    }
+
+    public JsonArray convertTopRecordsToJson(String source) throws JSONException {
+        int index = 0;
+        Document document = Jsoup.parse(source);
+        JSONObject recordJson = null;
+        JSONArray records = new JSONArray();
+        String[] record = new String[6];
+
+        for (Element tr : document.select("table").select("tr")) {
+            recordJson = new JSONObject();
+            for (Element td : tr.select("td")) {
+                record[index] = td.text();
+                index++;
+            }
+            index = 0;
+            if (record.length > 0 && record[0] != null) {
+                recordJson.put("period", record[0]);
+                recordJson.put("position", record[1]);
+                recordJson.put("title", record[2]);
+                recordJson.put("rating", record[3]);
+                recordJson.put("games", record[4]);
+                records.put(recordJson);
+            }
+        }
+        return gson.fromJson(records.toString(), JsonArray.class);
     }
 }
