@@ -10,7 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import springfox.documentation.oas.annotations.EnableOpenApi;
+
 @SpringBootApplication
+@EnableOpenApi
 public class PlayersApplication {
 
 	public static void main(String[] args) {
@@ -34,7 +37,8 @@ public class PlayersApplication {
 	}
 
 	@Bean
-	public CloseableHttpClient httpClient(PoolingHttpClientConnectionManager poolingHttpClientConnectionManager, RequestConfig requestConfig) {
+	public CloseableHttpClient httpClient(PoolingHttpClientConnectionManager poolingHttpClientConnectionManager,
+			RequestConfig requestConfig) {
 		return HttpClientBuilder
 				.create()
 				.setConnectionManager(poolingHttpClientConnectionManager)
