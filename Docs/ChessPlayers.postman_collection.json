@@ -11,11 +11,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/player/top-hundred?rank={men, women, juniors or girls}",
+					"raw": "{{baseUrl}}/player/top-hundred?rank={{rank}}",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "8080",
 					"path": [
 						"player",
 						"top-hundred"
@@ -23,7 +22,7 @@
 					"query": [
 						{
 							"key": "rank",
-							"value": "{men, women, juniors or girls}"
+							"value": "{{rank}}"
 						}
 					]
 				}
@@ -36,14 +35,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/player/{fideId}",
+					"raw": "{{baseUrl}}/player/{{fideId}}",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "8080",
 					"path": [
 						"player",
-						"{fideId}"
+						"{{fideId}}"
 					]
 				}
 			},
@@ -55,14 +53,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/player/{fideId}/chart",
+					"raw": "{{baseUrl}}/player/{{fideId}}/chart",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "8080",
 					"path": [
 						"player",
-						"{fideId}",
+						"{{fideId}}",
 						"chart"
 					]
 				}
@@ -75,14 +72,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/player/{fideId}/top-records",
+					"raw": "{{baseUrl}}/player/{{fideId}}/top-records",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "8080",
 					"path": [
 						"player",
-						"{fideId}",
+						"{{fideId}}",
 						"top-records"
 					]
 				}
@@ -95,11 +91,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/player/events",
+					"raw": "{{baseUrl}}/player/events",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "8080",
 					"path": [
 						"player",
 						"events"
