@@ -1,206 +1,236 @@
 package com.chess.players.util;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.chess.players.model.Chart;
+import com.chess.players.model.ChartByPlayer;
+import com.chess.players.model.Event;
+import com.chess.players.model.EventsByPlace;
+import com.chess.players.model.Player;
+import com.chess.players.model.Ratings;
+import com.chess.players.model.RecordsByPlayer;
+import com.chess.players.model.TopHundred;
+import com.chess.players.model.TopRecord;
 
 @Component
 public class ConvertHtmlToJson {
 
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-    public JsonObject convertHtmlToJson(String source, String rank) throws JSONException {
+    public List<TopHundred> convertHtmlToJson(String source, String rank) throws Exception {
         int index = 0;
         Document doc = Jsoup.parse(source);
-        JSONObject jsonObject = null;
-        JSONObject teste = new JSONObject();
-        JSONArray array = new JSONArray();
+        TopHundred player = null;
+        List<TopHundred> listPlayers = new ArrayList<>();
+
         String[] texts = null;
-        for (Element table : doc.select("table")) {
-            for (Element row : table.select("tr")) {
-                texts = new String[6];
-                jsonObject = new JSONObject();
-                Elements tds = row.select("td");
 
-                for (Element e : tds) {
-                    texts[index] = e.text();
-                    index++;
+        try {
+            for (Element table : doc.select("table")) {
+                for (Element row : table.select("tr")) {
+                    texts = new String[6];
+
+                    Elements tds = row.select("td");
+
+                    for (Element e : tds) {
+                        texts[index] = e.text();
+                        index++;
+                    }
+                    if (texts.length > 0 && texts[0] != null) {
+                        player = new TopHundred(
+                                Integer.parseInt(texts[0]),
+                                texts[1],
+                                texts[2],
+                                Integer.parseInt(texts[3]),
+                                Integer.parseInt(texts[5]));
+                        listPlayers.add(player);
+                    }
+                    index = 0;
                 }
-                if (texts.length > 0 && texts[0] != null) {
-                    jsonObject.put("position", Integer.parseInt(texts[0]));
-                    jsonObject.put("name", texts[1]);
-                    jsonObject.put("federation", texts[2]);
-                    jsonObject.put("standardRating", Integer.parseInt(texts[3]));
-                    jsonObject.put("yearOfBirth", Integer.parseInt(texts[5]));
-                    array.put(jsonObject);
-                }
-                index = 0;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Erro ao buscar rank top 100" + rank);
         }
-        teste.put("Top 100 " + rank, array);
-        return gson.fromJson(teste.toString(), JsonObject.class);
+        return listPlayers;
     }
 
-    public JsonObject convertHtmlToJson(String source) throws JSONException {
+    public Player convertHtmlToJson(String source) throws Exception {
         int index = 0;
         Document document = Jsoup.parse(source);
-        JSONObject player = new JSONObject();
-        JSONObject ratingsJson = new JSONObject();
+        Player player = null;
         String[] profile = new String[6];
-        String[] ratings = new String[3];
+        String[] rating = new String[3];
+        Ratings ratings = null;
 
-        Element divProfile = document.getElementsByClass("profile-top__right").first();
+        try {
+            Element divProfile = document.getElementsByClass("profile-top__right").first();
 
-        Elements dataRatings = divProfile.getElementsByClass("profile-top-rating-data");
-        for (Element e : dataRatings) {
-            ratings[index] = e.text().contains("Not rated") ? "Not rated" : e.text().replaceAll("[\\D]", "");
-            index++;
-        }
-        if (ratings.length > 0) {
-            ratingsJson.put("ratingStandard",
-                    ratings[0].contains("Not rated") ? ratings[0] : Integer.parseInt(ratings[0]));
-            ratingsJson.put("ratingRapid",
-                    ratings[1].contains("Not rated") ? ratings[1] : Integer.parseInt(ratings[1]));
-            ratingsJson.put("ratingBlitz",
-                    ratings[2].contains("Not rated") ? ratings[2] : Integer.parseInt(ratings[2]));
-        }
-
-        index = 0;
-
-        Elements name = divProfile.getElementsByClass("profile-top-title");
-        player.put("name", name.first().text());
-
-        Elements dataProfile = divProfile.getElementsByClass("profile-top-info__block__row__data");
-
-        for (Element e : dataProfile) {
-            profile[index] = e.text();
-            index++;
-        }
-        if (profile.length > 0) {
-            player.put("position", Integer.parseInt(profile[0]));
-            player.put("federation", profile[1]);
-            player.put("fideID", profile[2]);
-            player.put("yearOfBirth", Integer.parseInt(profile[3]));
-            player.put("title", profile[5]);
-            player.put("ratings", ratingsJson);
-        }
-        return gson.fromJson(player.toString(), JsonObject.class);
-    }
-
-    public JsonObject convertChartToJson(String source) throws JSONException {
-        int index = 0;
-        Document document = Jsoup.parse(source);
-        JSONObject chart = null;
-        JSONArray dataChart = new JSONArray();
-
-        String[] data = null;
-
-        Element divProfile = document.getElementsByClass("profile-top__right").first();
-        Elements name = divProfile.getElementsByClass("profile-top-title");
-
-        for (Element table : document.getElementsByClass("profile-table_chart-table")) {
-
-            for (Element tr : table.select("tr")) {
-                data = new String[7];
-                chart = new JSONObject();
-                Elements tds = tr.select("td");
-
-                for (Element e : tds) {
-                    data[index] = e.text();
-                    index++;
-                }
-
-                if (data.length > 0 && data[0] != null) {
-                    chart.put("period", data[0]);
-                    chart.put("standardRating", data[1] != null && !data[1].isEmpty() ? Integer.parseInt(data[1]) : 0);
-                    chart.put("rapidRating", data[3] != null && !data[3].isEmpty() ? Integer.parseInt(data[3]) : 0);
-                    chart.put("blitzRating", data[5] != null && !data[5].isEmpty() ? Integer.parseInt(data[5]) : 0);
-                    dataChart.put(chart);
-                }
-                index = 0;
-            }
-        }
-        return gson.fromJson(new JSONObject().put(name.first().text(), dataChart).toString(), JsonObject.class);
-    }
-
-    public JsonArray convertTopRecordsToJson(String source) throws JSONException {
-        int index = 0;
-        Document document = Jsoup.parse(source);
-        JSONObject recordJson = null;
-        JSONArray records = new JSONArray();
-        String[] record = new String[6];
-
-        for (Element tr : document.select("table").select("tr")) {
-            recordJson = new JSONObject();
-            for (Element td : tr.select("td")) {
-                record[index] = td.text();
+            Elements dataRatings = divProfile.getElementsByClass("profile-top-rating-data");
+            for (Element e : dataRatings) {
+                rating[index] = e.text().contains("Not rated") ? "Not rated" : e.text().replaceAll("[\\D]", "");
                 index++;
             }
-            index = 0;
-            if (record.length > 0 && record[0] != null) {
-                recordJson.put("period", record[0]);
-                recordJson.put("position", record[1]);
-                recordJson.put("title", record[2]);
-                recordJson.put("rating", record[3]);
-                recordJson.put("games", record[4]);
-                records.put(recordJson);
+            if (rating.length > 0) {
+                ratings = new Ratings(
+                        rating[0],
+                        rating[1],
+                        rating[2]);
             }
+
+            index = 0;
+
+            Elements name = divProfile.getElementsByClass("profile-top-title");
+
+            Elements dataProfile = divProfile.getElementsByClass("profile-top-info__block__row__data");
+
+            for (Element e : dataProfile) {
+                profile[index] = e.text();
+                index++;
+            }
+            if (profile.length > 0) {
+                player = new Player(
+                        Integer.parseInt(profile[0]),
+                        name.first().text(),
+                        profile[1],
+                        profile[2],
+                        Integer.parseInt(profile[3]),
+                        profile[5],
+                        ratings);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Erro ao buscar jogador");
         }
-        return gson.fromJson(records.toString(), JsonArray.class);
+        return player;
     }
 
-    public JsonObject convertEventsToJson(String source) throws JSONException {
+    public ChartByPlayer convertHtmlChartToJson(String source) throws Exception {
         int index = 0;
-        int indexCalendar = 0;
         Document document = Jsoup.parse(source);
-        JSONObject eventJson = new JSONObject();
-        JSONObject dataEvent = null;
-        JSONArray events = null;
-        String[] event = new String[4];
-        String[] calendars = new String[5];
+        Chart chart = null;
+        List<Chart> dataChart = new ArrayList<>();
+        String[] data = null;
+        Elements name = null;
 
-        for (Element div : document.getElementsByClass("calendar-table__title")) {
-            calendars[index] = div.text();
-            index++;
-        }
-        index = 0;
+        try {
+            Element divProfile = document.getElementsByClass("profile-top__right").first();
+            name = divProfile.getElementsByClass("profile-top-title");
 
-        for (Element div : document.getElementsByClass("calendar-table")) {
-            events = new JSONArray();
-            for (Element table : div.select("tbody")) {
+            for (Element table : document.getElementsByClass("profile-table_chart-table")) {
+
                 for (Element tr : table.select("tr")) {
-
+                    data = new String[7];
                     Elements tds = tr.select("td");
-                    dataEvent = new JSONObject();
-                    for (Element td : tds) {
-                        event[index] = td.text();
+
+                    for (Element e : tds) {
+                        data[index] = e.text();
                         index++;
                     }
 
-                    index = 0;
-
-                    if (event.length > 0 && event[0] != null && !event[0].contains("More")) {
-                        dataEvent.put("name", event[0]);
-                        dataEvent.put("place", event[1]);
-                        dataEvent.put("start", event[2]);
-                        dataEvent.put("end", event[3]);
-                        events.put(dataEvent);
+                    if (data.length > 0 && data[0] != null) {
+                        chart = new Chart(
+                                data[0],
+                                data[1] != null && !data[1].isEmpty() ? data[1] : "0",
+                                data[3] != null && !data[3].isEmpty() ? data[3] : "0",
+                                data[5] != null && !data[5].isEmpty() ? data[5] : "0");
+                        dataChart.add(chart);
                     }
+                    index = 0;
                 }
-                eventJson.put(calendars[indexCalendar], events);
-                indexCalendar++;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Erro ao buscar chart de progresso do jogador");
         }
-        return gson.fromJson(eventJson.toString(), JsonObject.class);
+        return new ChartByPlayer(name.first().text(), dataChart);
+    }
+
+    public List<TopRecord> convertHtmlTopRecordsToJson(String source, String fideId) throws Exception {
+        int index = 0;
+        Document document = Jsoup.parse(source);
+        TopRecord topRecord = null;
+        List<TopRecord> records = new ArrayList<>();
+        String[] record = new String[6];
+
+        try {
+            for (Element tr : document.select("table").select("tr")) {
+
+                for (Element td : tr.select("td")) {
+                    record[index] = td.text();
+                    index++;
+                }
+                index = 0;
+                if (record.length > 0 && record[0] != null) {
+                    topRecord = new TopRecord(
+                            record[0],
+                            record[1],
+                            record[2],
+                            record[3],
+                            record[4]);
+                    records.add(topRecord);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Erro ao buscar records de jogador");
+        }
+        return records;
+    }
+
+    public List<EventsByPlace> convertHtmlEventsToJson(String source) throws Exception {
+        int index = 0;
+        int indexCalendar = 0;
+        Document document = Jsoup.parse(source);
+        List<EventsByPlace> eventsByPlace = new ArrayList<>();
+        Event dataEvent = null;
+        List<Event> events = null;
+        String[] event = new String[4];
+        String[] calendars = new String[5];
+
+        try {
+            for (Element div : document.getElementsByClass("calendar-table__title")) {
+                calendars[index] = div.text();
+                index++;
+            }
+            index = 0;
+
+            for (Element div : document.getElementsByClass("calendar-table")) {
+                events = new ArrayList<>();
+                for (Element table : div.select("tbody")) {
+                    for (Element tr : table.select("tr")) {
+
+                        Elements tds = tr.select("td");
+
+                        for (Element td : tds) {
+                            event[index] = td.text();
+                            index++;
+                        }
+
+                        index = 0;
+
+                        if (event.length > 0 && event[0] != null && !event[0].contains("More")) {
+                            dataEvent = new Event(
+                                    event[0],
+                                    event[1],
+                                    event[2],
+                                    event[3]);
+                            events.add(dataEvent);
+                        }
+                    }
+                    eventsByPlace.add(new EventsByPlace(calendars[indexCalendar], events));
+                    indexCalendar++;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Erro ao buscar eventos");
+        }
+        return eventsByPlace;
     }
 }
