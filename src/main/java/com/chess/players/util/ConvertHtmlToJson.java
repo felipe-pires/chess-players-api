@@ -15,7 +15,6 @@ import com.chess.players.model.Event;
 import com.chess.players.model.EventsByPlace;
 import com.chess.players.model.Player;
 import com.chess.players.model.Ratings;
-import com.chess.players.model.RecordsByPlayer;
 import com.chess.players.model.TopHundred;
 import com.chess.players.model.TopRecord;
 
@@ -73,7 +72,7 @@ public class ConvertHtmlToJson {
 
             Elements dataRatings = divProfile.getElementsByClass("profile-top-rating-data");
             for (Element e : dataRatings) {
-                rating[index] = e.text().contains("Not rated") ? "Not rated" : e.text().replaceAll("[\\D]", "");
+                rating[index] = e.text().contains("Not rated") ? e.text() : e.text().replaceAll("[\\D]", "");
                 index++;
             }
             if (rating.length > 0) {
@@ -169,10 +168,10 @@ public class ConvertHtmlToJson {
                 if (record.length > 0 && record[0] != null) {
                     topRecord = new TopRecord(
                             record[0],
-                            record[1],
-                            record[2],
                             record[3],
-                            record[4]);
+                            record[4],
+                            record[1],
+                            record[2]);
                     records.add(topRecord);
                 }
             }
