@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8080/player/top-hundred?rank={men, women, girls or juniors}",
+					"raw": "localhost:8080/player/top-hundred?rank={men, women, juniors or girls}",
 					"host": [
 						"localhost"
 					],
@@ -23,7 +23,7 @@
 					"query": [
 						{
 							"key": "rank",
-							"value": "{men, women, girls or juniors}"
+							"value": "{men, women, juniors or girls}"
 						}
 					]
 				}
@@ -64,6 +64,45 @@
 						"player",
 						"{fideId}",
 						"chart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "top-records",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/player/{fideId}/top-records",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"player",
+						"{fideId}",
+						"top-records"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "events",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/player/events",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"player",
+						"events"
 					]
 				}
 			},

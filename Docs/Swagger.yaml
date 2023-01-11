@@ -4,15 +4,11 @@ info:
   description: Fornece dados de jogadores de xadrez em json
   termsOfService: urn:tos
   contact: {}
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0
   version: '1.0'
 tags:
   - name: player-controller
     description: Player Controller
 paths:
-
   "/player/{fideId}":
     get:
       servers:
@@ -36,7 +32,7 @@ paths:
               schema:
                 "$ref": "#/components/schemas/Player"
         '500':
-          description: Internal Error
+          description: Internal Server Error
         '400':
           description: Bad Request
       deprecated: false
@@ -63,7 +59,7 @@ paths:
               schema:
                 "$ref": "#/components/schemas/ChartPlayer"
         '500':
-          description: Internal Error
+          description: Internal Server Error
         '400':
           description: Bad Request
       deprecated: false
@@ -90,7 +86,27 @@ paths:
               schema:
                 "$ref": "#/components/schemas/TopHundredPlayers"
         '500':
-          description: Internal Error
+          description: Internal Server Error
+        '400':
+          description: Bad Request
+      deprecated: false
+  "/player/events":
+    get:
+      servers:
+      - url: 'localhost:8080'
+      tags:
+        - player-controller
+      summary: Retorna os eventos da fide
+      operationId: findEvents
+      responses:
+        '200':
+          description: OK
+          content:
+            "*/*":
+              schema:
+                "$ref": "#/components/schemas/Events"
+        '500':
+          description: Internal Server Error
         '400':
           description: Bad Request
       deprecated: false
@@ -147,3 +163,20 @@ components:
         yearOfBirth:
           type: integer
       title: TopHundredPlayers
+    Events:
+      type: object
+      properties:
+        place: 
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              start:
+                type: string
+              end:
+                type: string
+              place:
+                type: string       
+      title: Events
