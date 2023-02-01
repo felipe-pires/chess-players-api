@@ -19,7 +19,7 @@ import com.chess.players.service.PlayerService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+ 
 @RestController
 @RequestMapping("/player")
 @Tag(name = "Player", description = "player controller")
