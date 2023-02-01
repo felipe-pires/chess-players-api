@@ -59,7 +59,7 @@ public class ConvertHtmlToJson {
         return listPlayers;
     }
 
-    public Player convertHtmlToJson(String source) throws Exception {
+    public Player convertHtmlPlayerToJson(String source) throws Exception {
         int index = 0;
         Document document = Jsoup.parse(source);
         Player player = null;
