@@ -66,6 +66,15 @@ class PlayerControllerTest {
 
     @Test
     void findPlayer() throws Exception {
+        when(service.findPlayer(anyString())).thenReturn(player);
+
+        ResponseEntity<Player> response = controller.findPlayer(FIDE_ID);
+
+        assertNotNull(response);
+        assertNotNull(response.getBody().getName());
+        assertTrue(!response.getBody().getName().isEmpty());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Player.class, response.getBody().getClass());
     }
 
     @Test
