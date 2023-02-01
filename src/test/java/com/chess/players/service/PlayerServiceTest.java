@@ -20,7 +20,9 @@ import com.chess.players.model.Chart;
 import com.chess.players.model.ChartByPlayer;
 import com.chess.players.model.Player;
 import com.chess.players.model.Ratings;
+import com.chess.players.model.RecordsByPlayer;
 import com.chess.players.model.TopHundred;
+import com.chess.players.model.TopRecord;
 import com.chess.players.util.ConvertHtmlToJson;
 import com.chess.players.util.HttpRequestUtil;
 
@@ -43,6 +45,8 @@ class PlayerServiceTest {
     private Ratings ratings;
     private ChartByPlayer chartPlayer;
     private Chart chart;
+    private TopRecord record;
+    //private RecordsByPlayer recordsByPlayer;
     private ResponseEntity responseEntity;
 
     @BeforeEach
@@ -89,7 +93,18 @@ class PlayerServiceTest {
     }
 
     @Test
-    void findTopRecords() {
+    void findTopRecords() throws Exception {
+        when(convertHtmlToJson.convertHtmlTopRecordsToJson(anyString(), anyString())).thenReturn(List.of(record));
+        when(convertHtmlToJson.convertHtmlPlayerToJson(anyString())).thenReturn(player);
+        when(requestUtil.get(anyString())).thenReturn(responseEntity);
+
+        RecordsByPlayer response = service.findTopRecords(FIDE_ID);
+
+        assertNotNull(response);
+        assertNotNull(response.getName());
+        assertNotNull(response.getRecords());
+        assertTrue(!response.getRecords().get(0).getPeriod().isEmpty());
+
     }
 
     @Test
@@ -103,6 +118,8 @@ class PlayerServiceTest {
         topHundred = new TopHundred(1, "Carlsen, Magnus", "NOR", 2840, 1990);
         chart = new Chart("Jan-203","2840","2870", "2800");
         chartPlayer = new ChartByPlayer("Carlsen, Magnus", List.of(chart));
+        record = new TopRecord("Jan-2023","2900","3", "1", "GM");
+        //recordsByPlayer = new RecordsByPlayer("Magnus, Carlsen", List.of(record));
         responseEntity = new ResponseEntity(new String(), HttpStatus.OK);
     }
 }
