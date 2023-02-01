@@ -31,7 +31,7 @@ public class PlayerService {
 
     public Player findPlayer(String fideId) throws Exception {
         ResponseEntity responseEntity = requestUtil.get("https://ratings.fide.com/profile/" + fideId);
-        return convert.convertHtmlToJson(responseEntity.getBody().toString());
+        return convert.convertHtmlPlayerToJson(responseEntity.getBody().toString());
     }
 
     public ChartByPlayer findChartPlayer(String fideId) throws Exception {
