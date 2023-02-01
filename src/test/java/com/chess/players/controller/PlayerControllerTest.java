@@ -22,6 +22,7 @@ import com.chess.players.model.Event;
 import com.chess.players.model.EventsByPlace;
 import com.chess.players.model.Player;
 import com.chess.players.model.Ratings;
+import com.chess.players.model.RecordsByPlayer;
 import com.chess.players.model.TopHundred;
 import com.chess.players.model.TopRecord;
 import com.chess.players.service.PlayerService;
@@ -44,6 +45,7 @@ class PlayerControllerTest {
     private ChartByPlayer chartPlayer;
     private Chart chart;
     private TopRecord record;
+    private RecordsByPlayer recordsByPlayer;
     private Event event;
     private EventsByPlace eventsByPlace;
 
@@ -59,6 +61,7 @@ class PlayerControllerTest {
 
         ResponseEntity<List<TopHundred>> response = controller.findTop100Players(RANK);
 
+        assertEquals(Player.class, response.getBody().getClass());
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -71,11 +74,11 @@ class PlayerControllerTest {
 
         ResponseEntity<Player> response = controller.findPlayer(FIDE_ID);
 
+        assertEquals(Player.class, response.getBody().getClass());
         assertNotNull(response);
         assertNotNull(response.getBody().getName());
         assertTrue(!response.getBody().getName().isEmpty());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(Player.class, response.getBody().getClass());
     }
 
     @Test
@@ -84,20 +87,32 @@ class PlayerControllerTest {
 
         ResponseEntity<ChartByPlayer> response = controller.findChartPlayer(FIDE_ID);
 
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertTrue(response.getBody().getChart().size() > 0);
         assertNotNull(response.getBody().getName());
         assertTrue(!response.getBody().getName().isEmpty());
+    }
+
+    @Test
+    void findTopRecords() throws Exception {
+        when(service.findTopRecords(anyString())).thenReturn(recordsByPlayer);
+
+        ResponseEntity<RecordsByPlayer> response = controller.findTopRecords(FIDE_ID);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(TopRecord.class, response.getBody().getRecords().get(0).getClass());
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getRecords().size() > 0);
+        assertNotNull(response.getBody().getName());
+        assertTrue(!response.getBody().getName().isEmpty());
+        assertTrue(!response.getBody().getRecords().get(0).getPeriod().isEmpty());
     }
 
     @Test
-    void findTopRecords() {
-    }
-
-    @Test
-    void findEvents() {
+    void findEvents() throws Exception {
     }
 
     private void start(){
@@ -107,6 +122,7 @@ class PlayerControllerTest {
         chart = new Chart("Jan-203","2840","2870", "2800");
         chartPlayer = new ChartByPlayer("Carlsen, Magnus", List.of(chart));
         record = new TopRecord("Jan-2023","2900","3", "1", "GM");
+        recordsByPlayer = new RecordsByPlayer("Carlsen, Magnus", List.of(record));
         event = new Event("chess","sp","01-2023", "02-2023");
         eventsByPlace = new EventsByPlace("brasil", List.of(event));
     }
