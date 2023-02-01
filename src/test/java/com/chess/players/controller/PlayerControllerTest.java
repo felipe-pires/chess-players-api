@@ -1,5 +1,13 @@
 package com.chess.players.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,13 +25,6 @@ import com.chess.players.model.Ratings;
 import com.chess.players.model.TopHundred;
 import com.chess.players.model.TopRecord;
 import com.chess.players.service.PlayerService;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
 
 class PlayerControllerTest {
 
@@ -78,7 +79,17 @@ class PlayerControllerTest {
     }
 
     @Test
-    void findChartPlayer() {
+    void findChartPlayer() throws Exception {
+        when(service.findChartPlayer(anyString())).thenReturn(chartPlayer);
+
+        ResponseEntity<ChartByPlayer> response = controller.findChartPlayer(FIDE_ID);
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().getChart().size() > 0);
+        assertNotNull(response.getBody().getName());
+        assertTrue(!response.getBody().getName().isEmpty());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
