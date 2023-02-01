@@ -49,6 +49,14 @@ class PlayerServiceTest {
 
     @Test
     void findTop100Players() throws Exception {
+        when(convertHtmlToJson.convertHtmlToJson(anyString(), anyString())).thenReturn(List.of(topHundred));
+        when(requestUtil.get(anyString())).thenReturn(responseEntity);
+
+        List<TopHundred> list = service.findTop100Players(RANK);
+
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        assertEquals(TopHundred.class, list.get(0).getClass());
     }
 
     @Test
