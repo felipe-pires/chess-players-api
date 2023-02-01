@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.chess.players.model.Chart;
 import com.chess.players.model.ChartByPlayer;
+import com.chess.players.model.Event;
+import com.chess.players.model.EventsByPlace;
 import com.chess.players.model.Player;
 import com.chess.players.model.Ratings;
 import com.chess.players.model.RecordsByPlayer;
@@ -46,7 +48,8 @@ class PlayerServiceTest {
     private ChartByPlayer chartPlayer;
     private Chart chart;
     private TopRecord record;
-    //private RecordsByPlayer recordsByPlayer;
+    private Event event;
+    private EventsByPlace eventsByPlace;
     private ResponseEntity responseEntity;
 
     @BeforeEach
@@ -60,11 +63,11 @@ class PlayerServiceTest {
         when(convertHtmlToJson.convertHtmlToJson(anyString(), anyString())).thenReturn(List.of(topHundred));
         when(requestUtil.get(anyString())).thenReturn(responseEntity);
 
-        List<TopHundred> list = service.findTop100Players(RANK);
+        List<TopHundred> response = service.findTop100Players(RANK);
 
-        assertNotNull(list);
-        assertEquals(1, list.size());
-        assertEquals(TopHundred.class, list.get(0).getClass());
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals(TopHundred.class, response.get(0).getClass());
     }
 
     @Test
@@ -108,7 +111,16 @@ class PlayerServiceTest {
     }
 
     @Test
-    void findEvents() {
+    void findEvents() throws Exception {
+        when(convertHtmlToJson.convertHtmlEventsToJson(anyString())).thenReturn(List.of(eventsByPlace));
+        when(requestUtil.get(anyString())).thenReturn(responseEntity);
+
+        List<EventsByPlace> response = service.findEvents();
+
+        assertNotNull(response);
+        assertNotNull(response.get(0).getPlace());
+        assertNotNull(response.get(0).getEvents());
+        assertTrue(!response.get(0).getEvents().get(0).getName().isEmpty());
     }
 
 
@@ -119,7 +131,8 @@ class PlayerServiceTest {
         chart = new Chart("Jan-203","2840","2870", "2800");
         chartPlayer = new ChartByPlayer("Carlsen, Magnus", List.of(chart));
         record = new TopRecord("Jan-2023","2900","3", "1", "GM");
-        //recordsByPlayer = new RecordsByPlayer("Magnus, Carlsen", List.of(record));
+        event = new Event("chess","sp","01-2023", "02-2023");
+        eventsByPlace = new EventsByPlace("brasil", List.of(event));
         responseEntity = new ResponseEntity(new String(), HttpStatus.OK);
     }
 }
