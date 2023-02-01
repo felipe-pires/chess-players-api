@@ -61,10 +61,10 @@ class PlayerControllerTest {
 
         ResponseEntity<List<TopHundred>> response = controller.findTop100Players(RANK);
 
-        assertEquals(Player.class, response.getBody().getClass());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(TopHundred.class, response.getBody().get(0).getClass());
         assertNotNull(response);
         assertNotNull(response.getBody());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(!response.getBody().isEmpty());
     }
 
@@ -74,11 +74,11 @@ class PlayerControllerTest {
 
         ResponseEntity<Player> response = controller.findPlayer(FIDE_ID);
 
+        assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(Player.class, response.getBody().getClass());
         assertNotNull(response);
         assertNotNull(response.getBody().getName());
         assertTrue(!response.getBody().getName().isEmpty());
-        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -113,6 +113,15 @@ class PlayerControllerTest {
 
     @Test
     void findEvents() throws Exception {
+        when(service.findEvents()).thenReturn(List.of(eventsByPlace));
+        ResponseEntity<List<EventsByPlace>> response = controller.findEvents();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().size() > 0);
+        assertTrue(response.getBody().get(0).getEvents().size() > 0);
+        assertTrue(!response.getBody().get(0).getEvents().get(0).getName().isEmpty());
     }
 
     private void start(){
