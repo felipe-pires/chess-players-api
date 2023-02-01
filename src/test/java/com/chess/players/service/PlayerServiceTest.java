@@ -16,6 +16,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.chess.players.model.Chart;
+import com.chess.players.model.ChartByPlayer;
 import com.chess.players.model.Player;
 import com.chess.players.model.Ratings;
 import com.chess.players.model.TopHundred;
@@ -39,6 +41,8 @@ class PlayerServiceTest {
     private Player player;
     private TopHundred topHundred;
     private Ratings ratings;
+    private ChartByPlayer chartPlayer;
+    private Chart chart;
     private ResponseEntity responseEntity;
 
     @BeforeEach
@@ -72,7 +76,16 @@ class PlayerServiceTest {
     }
 
     @Test
-    void findChartPlayer() {
+    void findChartPlayer() throws Exception {
+        when(convertHtmlToJson.convertHtmlChartToJson(anyString())).thenReturn(chartPlayer);
+        when(requestUtil.get(anyString())).thenReturn(responseEntity);
+
+        ChartByPlayer response = service.findChartPlayer(FIDE_ID);
+
+        assertNotNull(response);
+        assertNotNull(response.getName());
+        assertNotNull(response.getChart());
+        assertTrue(!response.getChart().get(0).getPeriod().isEmpty());
     }
 
     @Test
@@ -88,6 +101,8 @@ class PlayerServiceTest {
         ratings = new Ratings( "2900", "2800", "2700");
         player = new Player(1, "Carlsen, Magnus", "NOR", "12345", 1989, "GM", ratings);
         topHundred = new TopHundred(1, "Carlsen, Magnus", "NOR", 2840, 1990);
+        chart = new Chart("Jan-203","2840","2870", "2800");
+        chartPlayer = new ChartByPlayer("Carlsen, Magnus", List.of(chart));
         responseEntity = new ResponseEntity(new String(), HttpStatus.OK);
     }
 }
