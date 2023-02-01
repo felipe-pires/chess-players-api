@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -27,6 +28,7 @@ import com.chess.players.model.TopHundred;
 import com.chess.players.model.TopRecord;
 import com.chess.players.service.PlayerService;
 
+@SpringBootTest
 class PlayerControllerTest {
 
     private static final String FIDE_ID = "12345";

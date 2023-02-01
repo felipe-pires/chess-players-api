@@ -20,7 +20,7 @@ import com.chess.players.model.TopRecord;
 
 @Component
 public class ConvertHtmlToJson {
-
+ 
     public List<TopHundred> convertHtmlToJson(String source, String rank) throws Exception {
         int index = 0;
         Document doc = Jsoup.parse(source);
